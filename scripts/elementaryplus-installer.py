@@ -437,7 +437,7 @@ class InstallerWindow(Gtk.Window):
 
     def install(self, appName, installMethod, sniqtPrefix):
         patchedSniqt = settings.get_boolean("sniqt-patched")
-        if appName != "core_icon_theme" and appName != "telegram_desktop" and patchedSniqt is False and fromPPA is False:
+        if appName != "core_icon_theme" and appName != "telegram_desktop" and installMethod != "electron" && patchedSniqt is False and fromPPA is False:
             print "Installing patched sni-qt"
             self.notify('This may take a while', 'Please don\'t close the window', 'preferences-desktop')
             if subprocess.call(['pkexec', scripts + "sni-qt.sh"]) == 0:
@@ -454,6 +454,8 @@ class InstallerWindow(Gtk.Window):
         out = 0
         if installMethod == "standard":
             out = self.installQtIndicatorIcons(appName, sniqtPrefix)
+        elif installMethod == "electron":
+            out = subprocess.call(['python', scripts + "custom/electron.py", "--install", appName])
         else:
             out = subprocess.call(['python', scripts + "custom/" + appName + ".py", "--install", whatToUse, scripts])
             print out
@@ -470,6 +472,8 @@ class InstallerWindow(Gtk.Window):
         out = 0
         if installMethod == "standard":
             out = self.removeQtIndicatorIcons(sniqtPrefix)
+        elif installMethod == "electron":
+            out = subprocess.call(['python', scripts + "custom/electron.py", "--remove", appName])
         else:
             out = subprocess.call(['python', scripts + "custom/" + appName + ".py", "--remove", whatToUse, scripts])
 
